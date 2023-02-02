@@ -35,6 +35,7 @@ import java.util.Collection;
  * @author Sam Brannen
  * @author Michael Isvy
  */
+
 public interface VetRepository extends Repository<Vet, Integer> {
 
 	/**
@@ -54,5 +55,8 @@ public interface VetRepository extends Repository<Vet, Integer> {
 	@Transactional(readOnly = true)
 	@Cacheable("vets")
 	Page<Vet> findAll(Pageable pageable) throws DataAccessException;
+
+	@Transactional
+	Vet add(Vet vet) throws DataAccessException;
 
 }

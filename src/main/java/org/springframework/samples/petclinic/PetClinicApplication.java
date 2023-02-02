@@ -16,9 +16,15 @@
 
 package org.springframework.samples.petclinic;
 
+import java.util.Collection;
+
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.samples.petclinic.vet.Vet;
+import org.springframework.samples.petclinic.vet.VetRepository;
 
 /**
  * PetClinic Spring Boot Application.
@@ -32,6 +38,16 @@ public class PetClinicApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(PetClinicApplication.class, args);
+	}
+
+	@Bean
+	public CommandLineRunner demoVetRepository(VetRepository vetRepository) {
+		return (args) -> {
+			// Collection<Vet> vetsCollection = vetRepository.findAll();
+			// System.out.println(vetsCollection.size());
+			Vet newVet = new Vet();
+			vetRepository.add(newVet);
+		};
 	}
 
 }
