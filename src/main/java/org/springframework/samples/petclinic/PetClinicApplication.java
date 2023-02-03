@@ -16,15 +16,19 @@
 
 package org.springframework.samples.petclinic;
 
-import java.util.Collection;
-
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.samples.petclinic.vet.Specialty;
+import org.springframework.samples.petclinic.vet.SpecialtyRepository;
 import org.springframework.samples.petclinic.vet.Vet;
 import org.springframework.samples.petclinic.vet.VetRepository;
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.logging.Logger;
 
 /**
  * PetClinic Spring Boot Application.
@@ -32,6 +36,8 @@ import org.springframework.samples.petclinic.vet.VetRepository;
  * @author Dave Syer
  *
  */
+
+@Slf4j
 @SpringBootApplication
 @ImportRuntimeHints(PetClinicRuntimeHints.class)
 public class PetClinicApplication {
@@ -41,12 +47,38 @@ public class PetClinicApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demoVetRepository(VetRepository vetRepository) {
+	public CommandLineRunner demoVetRepository(VetRepository vetRepository, SpecialtyRepository specialtyRepository) {
 		return (args) -> {
-			// Collection<Vet> vetsCollection = vetRepository.findAll();
-			// System.out.println(vetsCollection.size());
-			Vet newVet = new Vet();
-			vetRepository.add(newVet);
+			Logger log = Logger.getLogger(PetClinicApplication.class.getName());
+
+			log.info("*****************************************************");
+			log.info("BOOTCAMP - Spring y Spring Data - vetRepository");
+			log.info("*****************************************************");
+
+			log.info("Creamos un objeto Vet");
+			Vet vet = new Vet();
+			vet.setFirstName("Sergio");
+			vet.setLastName("Raposo Vargas");
+			log.info("Tienes id " + vet.getId());
+
+			log.info("Persistimos en BBDD");
+			vetRepository.save(vet);
+
+			log.info("Comprobamos que se ha creado correctamente");
+			Vet vetAux = vetRepository.findById(vet.getId());
+			log.info(vetAux.toString());
+			log.info("Editamos el objeto y añadimos una Speciality");
+
+			// A partir de aquí da error.
+			Specialty s = specialtyRepository.findById(1);
+			vet.addSpecialty(s);
+			vetRepository.save(vet);
+			log.info(vet.toString());
+
+			log.info("Listamos todos los veterinarios");
+			for (Vet v : vetRepository.findAll()) {
+				log.info("Vet: " + v.getFirstName());
+			}
 		};
 	}
 
