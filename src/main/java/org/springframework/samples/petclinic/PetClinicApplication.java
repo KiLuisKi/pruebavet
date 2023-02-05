@@ -21,6 +21,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.samples.petclinic.owner.Pet;
+import org.springframework.samples.petclinic.owner.PetRepository;
 import org.springframework.samples.petclinic.vet.Specialty;
 import org.springframework.samples.petclinic.vet.SpecialtyRepository;
 import org.springframework.samples.petclinic.vet.Vet;
@@ -28,6 +30,7 @@ import org.springframework.samples.petclinic.vet.VetRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDate;
 import java.util.logging.Logger;
 
 /**
@@ -47,7 +50,8 @@ public class PetClinicApplication {
 	}
 
 	@Bean
-	public CommandLineRunner demoVetRepository(VetRepository vetRepository, SpecialtyRepository specialtyRepository) {
+	public CommandLineRunner demoVetRepository(VetRepository vetRepository, SpecialtyRepository specialtyRepository,
+			PetRepository petRepository) {
 		return (args) -> {
 			Logger log = Logger.getLogger(PetClinicApplication.class.getName());
 
@@ -69,7 +73,7 @@ public class PetClinicApplication {
 			log.info(vetAux.toString());
 			log.info("Editamos el objeto y añadimos una Speciality");
 
-			// A partir de aquí da error.
+			// A partir de aquí da error con cualquier id menos id=0
 			Specialty s = specialtyRepository.findById(1);
 			vet.addSpecialty(s);
 			vetRepository.save(vet);
@@ -77,8 +81,25 @@ public class PetClinicApplication {
 
 			log.info("Listamos todos los veterinarios");
 			for (Vet v : vetRepository.findAll()) {
-				log.info("Vet: " + v.getFirstName());
+				log.info("Vet: " + v.getId() + "  " + v.getFirstName() + v.getSpecialties());
 			}
+
+			log.info("Listamos todos los veterinarios que tengan el mismo apellido");
+			for (Vet v : vetRepository.findByLastName("apellidoprueba")) {
+				log.info("Vet: " + v.getId() + "  " + v.getFirstName() + "  " + v.getLastName());
+			}
+
+			log.info("Listamos todos los veterinarios que tengan el mismo nombre y apellido");
+			for (Vet v : vetRepository.findByFirstNameAndLastName("Sergio", "Raposo Vargas")) {
+				log.info("Vet: " + v.getId() + "  " + v.getFirstName() + "  " + v.getLastName());
+			}
+
+			log.info("Mascotas nacidas en 2010 ordenadas por fecha de nacimiento");
+			LocalDate fecha = LocalDate.now();
+			for (Pet p : petRepository.findByBirthDateOrderByBirthDateAsc(fecha)) {
+				log.info("Pet: " + p.getId() + "  " + p.getName() + "  " + p.getBirthDate());
+			}
+
 		};
 	}
 
