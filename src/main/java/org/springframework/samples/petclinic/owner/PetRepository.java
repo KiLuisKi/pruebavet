@@ -10,4 +10,8 @@ public interface PetRepository extends Repository<Pet, Integer> {
 
 	Collection<Pet> findByBirthDateOrderByBirthDateAsc(@Param("birth_date") LocalDate date);
 
+	Collection<Pet> findAll();
+
+	Pet save(Pet pet);
+
 }

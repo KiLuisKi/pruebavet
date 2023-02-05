@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.samples.petclinic.owner.Pet;
 import org.springframework.samples.petclinic.owner.PetRepository;
+import org.springframework.samples.petclinic.owner.Visit;
 import org.springframework.samples.petclinic.vet.Specialty;
 import org.springframework.samples.petclinic.vet.SpecialtyRepository;
 import org.springframework.samples.petclinic.vet.Vet;
@@ -73,7 +74,6 @@ public class PetClinicApplication {
 			log.info(vetAux.toString());
 			log.info("Editamos el objeto y añadimos una Speciality");
 
-			// A partir de aquí da error con cualquier id menos id=0
 			Specialty s = specialtyRepository.findById(1);
 			vet.addSpecialty(s);
 			vetRepository.save(vet);
@@ -100,6 +100,15 @@ public class PetClinicApplication {
 				log.info("Pet: " + p.getId() + "  " + p.getName() + "  " + p.getBirthDate());
 			}
 
+			log.info("Creamos la visita");
+			Visit visit = new Visit();
+			visit.setDescription("Visita de prueba");
+			log.info("Añadimos la visita a las pets");
+			for (Pet p : petRepository.findAll()) {
+				p.addVisit(visit);
+				petRepository.save(p);
+				log.info("Pet: " + p.getId() + "  " + p.getName() + "  " + p.getVisits());
+			}
 		};
 	}
 
